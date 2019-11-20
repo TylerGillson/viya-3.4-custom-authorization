@@ -1,36 +1,6 @@
-from config import DEFAULT_REST_KWARGS
-from auth_and_rest_helpers import call_rest_api, parse_arguments
-
-
-def get_group(group_name):
-    endpoint = f"/identities/groups/?filter=startsWith(name,'{group_name}')"
-    group = call_rest_api(endpoint, "get", **DEFAULT_REST_KWARGS)["items"]
-    try:
-        return group[0], True
-    except IndexError:
-        return None, False
-
-
-def get_all_group_members(group_id):
-    endpoint = f"/identities/groups/{group_id}/members?depth=-1"  # recurse to bottom of LDAP tree
-    members = call_rest_api(endpoint, "get", **DEFAULT_REST_KWARGS)["items"]
-    return members
-
-
-def create_group(group_id, group_name):
-    endpoint = "/identities/groups/"
-    kwargs = DEFAULT_REST_KWARGS
-    kwargs["data"] = {
-        "id": group_id,
-        "name": group_name
-    }
-    call_rest_api(endpoint, "post", **kwargs)
-    return get_group(group_name)
-
-
-def modify_group_membership(http_method, group_id, member_id):
-    endpoint = f"/identities/groups/{group_id}/userMembers/{member_id}"
-    call_rest_api(endpoint, http_method, **DEFAULT_REST_KWARGS)
+from config import CUSTOM_GROUPS_DEFINITION_FILE
+from auth_and_rest_helpers import get_ldap_group, create_group, get_all_ldap_group_users, modify_group_membership, \
+                                  parse_arguments
 
 
 def main():
@@ -39,15 +9,20 @@ def main():
      - python generate_custom_authorization_groups.py [--options]
 
     # Examples:
-        1. Build/re-build auto-maintained groups from a group definition file:
+        1. Create and/or maintain auto-maintained groups from a group definition file specified at run-time:
             - python generate_custom_authorization_groups.py -agf auto-groups.csv
+        2. Same as above, but exercising all command-line options:
+            - python generate_custom_authorization_groups.py \
+                --sas-endpoint http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com \
+                --credentials-path C:\\Users\\cantyg\\.sas\\credentials.json \
+                --auto-group-file C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\auto-maintained-groups.csv
     """
 
-    # Parse command-line arguments:
-    auto_group_filename = parse_arguments()
+    # Parse command-line arguments to update configuration at run-time:
+    parse_arguments()
 
     # Read the auto-maintained groups file:
-    with open(auto_group_filename, "r") as f:
+    with open(CUSTOM_GROUPS_DEFINITION_FILE, "r") as f:
         f.readline()  # Skip the file header
         auto_maintained_groups_raw = f.readlines()
 
@@ -62,38 +37,39 @@ def main():
         input_groups = group_data[1:]
 
         # Determine if the auto-maintained group exists or not:
-        auto_group, auto_group_exists = get_group(auto_group_name)
+        auto_group, auto_group_exists = get_ldap_group(auto_group_name)
 
-        # Get all members of the auto-maintained group if it exists:
+        # Get all users of the auto-maintained group if it exists:
         if auto_group_exists:
             auto_group_id = auto_group["id"]
-            auto_group_members = get_all_group_members(auto_group_id)
-            auto_group_members = set([member["id"] for member in auto_group_members])
+            auto_group_users = get_all_ldap_group_users(auto_group_id)
+            auto_group_users = set([user["id"] for user in auto_group_users])
 
-        # Otherwise, create it and initialize its members as an empty set:
+        # Otherwise, create it and initialize its users as an empty set:
         else:
             auto_group_id = auto_group_name.replace(" ", "-").lower()
-            auto_group, _ = create_group(auto_group_id, auto_group_name)
-            auto_group_members = set()
+            create_group(auto_group_id, auto_group_name)
+            auto_group, _ = get_ldap_group(auto_group_name)
+            auto_group_users = set()
 
         # Iterate over all input groups and compute their combined intersection:
-        input_members_intersection = set()
+        input_users_intersection = set()
         for i, input_group_name in enumerate(input_groups):
-            input_group, _ = get_group(input_group_name)
-            input_group_members = get_all_group_members(input_group["id"])
-            input_group_members = set([member["id"] for member in input_group_members])
+            input_group, _ = get_ldap_group(input_group_name)
+            input_group_users = get_all_ldap_group_users(input_group["id"])
+            input_group_users = set([user["id"] for user in input_group_users])
             if i == 0:
-                input_members_intersection = input_group_members
+                input_users_intersection = input_group_users
             else:
-                input_members_intersection = input_members_intersection.intersection(input_group_members)
+                input_users_intersection = input_users_intersection.intersection(input_group_users)
 
         # Determine target auto-maintained group membership:
-        members_to_add = input_members_intersection.difference(auto_group_members)     # net-new members
-        members_to_remove = auto_group_members.difference(input_members_intersection)  # deprecated members
+        users_to_add = input_users_intersection.difference(auto_group_users)     # net-new users
+        users_to_remove = auto_group_users.difference(input_users_intersection)  # deprecated users
 
-        # Add/remove members to achieve target membership:
-        list(map(lambda member_id: modify_group_membership("put", auto_group_id, member_id), members_to_add))
-        list(map(lambda member_id: modify_group_membership("delete", auto_group_id, member_id), members_to_remove))
+        # Add/remove users to achieve target membership:
+        list(map(lambda user_id: modify_group_membership("put", auto_group_id, user_id), users_to_add))
+        list(map(lambda user_id: modify_group_membership("delete", auto_group_id, user_id), users_to_remove))
 
 
 if __name__ == "__main__":
