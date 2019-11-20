@@ -7,8 +7,8 @@ The generate_custom_authorization_groups.py script authorizes itself with a SAS 
 The group definition file must be in CSV format and be structured as follows:
 
 ```bash
-auto_group_name,group_1,group_2,...,group_n<br>
-<custom_group_name>,<ldap_group_name>,<ldap_group_name>,...,<ldap_group_name><br>
+auto_group_name,group_1,group_2,...,group_n
+<custom_group_name>,<ldap_group_name>,<ldap_group_name>,...,<ldap_group_name>
 ...
 ```
 
