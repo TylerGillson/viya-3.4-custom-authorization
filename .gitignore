@@ -1,0 +1,8 @@
+.idea/*
+venv/*
+build/*
+source/*
+Makefile
+make.bat
+requirements.txt
+__pycache__*
