@@ -61,13 +61,19 @@ def call_rest_api(request_value, request_type, **kwargs):
     if 400 <= http_result.status_code <= 599:
         raise ValueError(http_result.text)
     else:
-        try:
-            result = http_result.json()
-        except AttributeError:
+        # Don't return anything for the following REST methods:
+        if request_type in ["put", "post", "delete"]:
+            return
+
+        # Do return something for GET and HEAD:
+        else:
             try:
-                result = http_result.text
-            except AttributeError as error:
-                raise ValueError(repr(error) + ": empty HTTP response.")
+                result = http_result.json()
+            except AttributeError:
+                try:
+                    result = http_result.text
+                except AttributeError as error:
+                    raise ValueError(repr(error) + ": empty HTTP response.")
     return result
 
 

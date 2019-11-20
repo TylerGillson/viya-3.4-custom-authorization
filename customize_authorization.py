@@ -18,7 +18,7 @@ def get_all_group_members(group_id):
 
 
 def create_group(group_id, group_name):
-    endpoint = f"/identities/groups/"
+    endpoint = "/identities/groups/"
     kwargs = DEFAULT_REST_KWARGS
     kwargs["data"] = {
         "id": group_id,
@@ -29,18 +29,18 @@ def create_group(group_id, group_name):
 
 
 def modify_group_membership(http_method, group_id, member_id):
-    endpoint = f"/identities/groups/{group_id}/groupMembers/{member_id}"
+    endpoint = f"/identities/groups/{group_id}/userMembers/{member_id}"
     call_rest_api(endpoint, http_method, **DEFAULT_REST_KWARGS)
 
 
 def main():
     """
-    Usage:
-        python generate_custom_authorization_groups.py [--options]
+    # Usage:
+     - python generate_custom_authorization_groups.py [--options]
 
-    Examples:
+    # Examples:
         1. Build/re-build auto-maintained groups from a group definition file:
-            python generate_custom_authorization_groups.py -agf auto-groups.csv
+            - python generate_custom_authorization_groups.py -agf auto-groups.csv
     """
 
     # Parse command-line arguments:
@@ -66,13 +66,14 @@ def main():
 
         # Get all members of the auto-maintained group if it exists:
         if auto_group_exists:
-            auto_group_members = get_all_group_members(auto_group["id"])
+            auto_group_id = auto_group["id"]
+            auto_group_members = get_all_group_members(auto_group_id)
             auto_group_members = set([member["id"] for member in auto_group_members])
 
         # Otherwise, create it and initialize its members as an empty set:
         else:
             auto_group_id = auto_group_name.replace(" ", "-").lower()
-            auto_group = create_group(auto_group_id, auto_group_name)
+            auto_group, _ = create_group(auto_group_id, auto_group_name)
             auto_group_members = set()
 
         # Iterate over all input groups and compute their combined intersection:
@@ -91,8 +92,8 @@ def main():
         members_to_remove = auto_group_members.difference(input_members_intersection)  # deprecated members
 
         # Add/remove members to achieve target membership:
-        list(map(lambda member_id: modify_group_membership("put", auto_group, member_id), members_to_add))
-        list(map(lambda member_id: modify_group_membership("delete", auto_group, member_id), members_to_remove))
+        list(map(lambda member_id: modify_group_membership("put", auto_group_id, member_id), members_to_add))
+        list(map(lambda member_id: modify_group_membership("delete", auto_group_id, member_id), members_to_remove))
 
 
 if __name__ == "__main__":
