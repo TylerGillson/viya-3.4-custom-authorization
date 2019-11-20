@@ -1,5 +1,5 @@
 # Viya 3.4 Custom Authorization
-A collection of scripts for generating custom authorization groups in SAS Viya 3.4.
+A collection of scripts for generating custom authorization groups in SAS Viya 3.4. Read the full documentation <a href=https://viya-34-custom-authorization.readthedocs.io/en/latest/>here</a>.
 
 # Overview
 The generate_custom_authorization_groups.py script authorizes itself with a SAS Viya services node, then proceeds to programmatically generate custom Viya groups based on the contents of a custom group definition file. The group definition file's path is saved in config.py, but can also be specified at the command line.
