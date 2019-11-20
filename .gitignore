@@ -1,8 +1,8 @@
 .idea/*
 venv/*
-build/*
-source/*
-Makefile
-make.bat
+docs/build/*
+docs/source/*
+docs/Makefile
+docs/make.bat
 requirements.txt
 __pycache__*
