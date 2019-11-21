@@ -33,25 +33,9 @@
 <span class="target" id="module-customize_authorization.customize_authorization"></span><dl class="function">
 <dt id="customize_authorization.customize_authorization.main">
 <code class="sig-prename descclassname">customize_authorization.customize_authorization.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.customize_authorization.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>Usage:</p>
-<blockquote>
-<div><p>python generate_custom_authorization_groups.py [–options]</p>
-</div></blockquote>
-<p>Examples:</p>
-<blockquote>
-<div><ol class="arabic">
-<li><p>Create and/or maintain auto-maintained groups from a group definition file specified at run-time:</p>
-<blockquote>
-<div><p>python generate_custom_authorization_groups.py -agf auto-groups.csv</p>
-</div></blockquote>
-</li>
-<li><p>Same as above, but exercising all command-line options:</p>
-<blockquote>
-<div><p>python generate_custom_authorization_groups.py                 –sas-endpoint <a class="reference external" href="http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com">http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com</a>                 –credentials-path C:Userscantyg.sascredentials.json                 –auto-group-file C:UserscantygDownloadsSA_AUTHORIZATIONauto-maintained-groups.csv</p>
-</div></blockquote>
-</li>
-</ol>
-</div></blockquote>
+<dd><p>Update configuration settings based on command-line parameters, then proceed to parse the custom
+authorization groups file and make any necessary changes - such as creating new custom groups and managing
+the membership of existing custom groups.</p>
 </dd></dl>
 
 <span class="target" id="module-customize_authorization.argument_helper"></span><dl class="function">
@@ -63,56 +47,70 @@
 <span class="target" id="module-customize_authorization.oath_helper"></span><dl class="function">
 <dt id="customize_authorization.oath_helper.get_oauth_token">
 <code class="sig-prename descclassname">customize_authorization.oath_helper.</code><code class="sig-name descname">get_oauth_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.oath_helper.get_oauth_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a bearer token for a user profile on a SAS Viya services node.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>oath_token: a bearer token</p>
+<dd><p>Use the sas-admin CLI to generate a bearer token for a user profile on a SAS Viya services node,
+then parse it out of the credentials.json file.</p>
+<dl class="simple">
+<dt>oath_token:</dt><dd><p>A bearer token to be used in an HTTP request’s authorization header.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-customize_authorization.logger"></span><span class="target" id="module-customize_authorization.rest_api_helper"></span><dl class="function">
+<span class="target" id="module-customize_authorization.logger"></span><dl class="function">
+<dt id="customize_authorization.logger.get_timestamp_by_minute">
+<code class="sig-prename descclassname">customize_authorization.logger.</code><code class="sig-name descname">get_timestamp_by_minute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.logger.get_timestamp_by_minute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a timestamp string with the following format: YYYY-MM-DD_HH-MM</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="customize_authorization.logger.get_timestamp_by_second">
+<code class="sig-prename descclassname">customize_authorization.logger.</code><code class="sig-name descname">get_timestamp_by_second</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.logger.get_timestamp_by_second" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a timestamp string with the following format: YYYY-MM-DD_HH-MM-SS</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="customize_authorization.logger.log">
+<code class="sig-prename descclassname">customize_authorization.logger.</code><code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.logger.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a message to a log file, named by the current date + minute combination.</p>
+<dl class="simple">
+<dt>message:</dt><dd><p>The message to log.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-customize_authorization.rest_api_helper"></span><dl class="function">
 <dt id="customize_authorization.rest_api_helper.call_rest_api">
 <code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">call_rest_api</code><span class="sig-paren">(</span><em class="sig-param">request_value</em>, <em class="sig-param">request_type</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.call_rest_api" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute an HTTP request against a SAS REST API. In this case, the API in question will always be the Identities API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request_value</strong> – an API endpoint</p></li>
-<li><p><strong>request_type</strong> – an HTTP request type, i.e. ‘get’, ‘put’, ‘head’, etc.</p></li>
-<li><p><strong>kwargs</strong> – a dictionary of key-value pairs, including data, which contains the request body</p></li>
-</ul>
+<dl class="simple">
+<dt>request_value:</dt><dd><p>An API endpoint.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the HTTP response from the API endpoint</p>
+<dt>request_type:</dt><dd><p>An HTTP request type, i.e. ‘get’, ‘put’, ‘head’, etc.</p>
+</dd>
+<dt>kwargs:</dt><dd><p>A dictionary of key-value pairs, including data, which contains the request body.</p>
 </dd>
 </dl>
+<p>The HTTP response from the API endpoint.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="customize_authorization.rest_api_helper.check_ldap_group_existence">
 <code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">check_ldap_group_existence</code><span class="sig-paren">(</span><em class="sig-param">group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.check_ldap_group_existence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query the SAS Identities API to determine if an LDAP group exists or not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>group_id</strong> – the ID of the LDAP group of interest</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a boolean flag</p>
+<dl class="simple">
+<dt>group_id:</dt><dd><p>The ID of the LDAP group of interest.</p>
 </dd>
 </dl>
+<p>A boolean flag.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="customize_authorization.rest_api_helper.create_group">
 <code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">create_group</code><span class="sig-paren">(</span><em class="sig-param">group_id</em>, <em class="sig-param">group_name</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.create_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the SAS Identities API to create a custom group object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>group_id</strong> – the id of the LDAP group being created</p></li>
-<li><p><strong>group_name</strong> – the name of the LDAP group being created</p></li>
-</ul>
+<dl class="simple">
+<dt>group_id:</dt><dd><p>The ID of the LDAP group being created.</p>
+</dd>
+<dt>group_name:</dt><dd><p>The name of the LDAP group being created.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -121,12 +119,12 @@
 <dt id="customize_authorization.rest_api_helper.get_all_ldap_group_users">
 <code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">get_all_ldap_group_users</code><span class="sig-paren">(</span><em class="sig-param">group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.get_all_ldap_group_users" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query the SAS Identities API to retrieve all users contained within an LDAP group object’s member tree.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>group_id</strong> – the id of the LDAP group to retrieve users from</p>
+<dl class="simple">
+<dt>group_id:</dt><dd><p>The ID of the LDAP group to retrieve users from.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a JSON array of user objects</p>
+</dl>
+<dl class="simple">
+<dt>users:</dt><dd><p>A JSON array of user objects.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -135,13 +133,12 @@
 <dt id="customize_authorization.rest_api_helper.modify_group_membership">
 <code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">modify_group_membership</code><span class="sig-paren">(</span><em class="sig-param">http_method</em>, <em class="sig-param">group_id</em>, <em class="sig-param">user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.modify_group_membership" title="Permalink to this definition">¶</a></dt>
 <dd><p>Modify the membership of an existing group (LDAP or custom).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>http_method</strong> – either ‘put’ or ‘delete’ for addition or deletion, respectively</p></li>
-<li><p><strong>group_id</strong> – the id of the group being modified</p></li>
-<li><p><strong>user_id</strong> – the id of the user being added or removed</p></li>
-</ul>
+<dl class="simple">
+<dt>http_method:</dt><dd><p>Either ‘put’ or ‘delete’ for addition or deletion, respectively.</p>
+</dd>
+<dt>group_id:</dt><dd><p>The ID of the group being modified.</p>
+</dd>
+<dt>user_id:</dt><dd><p>The ID of the user being added or removed.</p>
 </dd>
 </dl>
 </dd></dl>

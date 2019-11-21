@@ -30,11 +30,8 @@ def log(message):
     """
     Write a message to a log file, named by the current date + minute combination.
 
-    Parameters
-    ----------
-
-    message:
-        The message to log.
+    Parameters:
+        - message: The message to log.
     """
     timestamp_by_second = get_timestamp_by_second()
     timestamp_by_minute = get_timestamp_by_minute()

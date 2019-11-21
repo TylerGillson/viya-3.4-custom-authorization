@@ -18,11 +18,8 @@ def get_oauth_token():
     Use the sas-admin CLI to generate a bearer token for a user profile on a SAS Viya services node,
     then parse it out of the credentials.json file.
 
-    Return
-    ------
-
-    oath_token:
-        A bearer token to be used in an HTTP request's authorization header.
+    Return:
+        - oath_token: A bearer token to be used in an HTTP request's authorization header.
     """
 
     # Authenticate via the sas-admin CLI:

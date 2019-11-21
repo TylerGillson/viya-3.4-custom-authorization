@@ -11,13 +11,13 @@ Welcome to Viya 3.4 Custom Authorization's documentation!
 .. automodule:: customize_authorization.argument_helper
    :members:
 
+.. automodule:: customize_authorization.rest_api_helper
+   :members:
+
 .. automodule:: customize_authorization.oath_helper
    :members:
 
 .. automodule:: customize_authorization.logger
-   :members:
-
-.. automodule:: customize_authorization.rest_api_helper
    :members:
 
 Indices and tables
