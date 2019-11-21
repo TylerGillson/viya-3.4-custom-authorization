@@ -1,5 +1,5 @@
 import datetime
-from config import LOG_ROOT
+from customize_authorization.config import LOG_ROOT
 
 
 def get_timestamp_by_second():

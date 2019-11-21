@@ -10,10 +10,19 @@ Welcome to Viya 3.4 Custom Authorization's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. automodule:: argument_helper
+   :members:
+
 .. automodule:: customize_authorization
    :members:
 
-.. automodule:: auth_and_rest_helpers
+.. automodule:: logger
+   :members:
+
+.. automodule:: oauth_helper
+   :members:
+
+.. automodule:: rest_api_helper
    :members:
 
 Indices and tables

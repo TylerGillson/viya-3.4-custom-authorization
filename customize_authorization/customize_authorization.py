@@ -1,6 +1,7 @@
-from argument_helper import parse_arguments
-from config import CUSTOM_GROUPS_DEFINITION_FILE
-from rest_api_helper import create_group, get_all_ldap_group_users, check_ldap_group_existence, modify_group_membership
+from customize_authorization.argument_helper import parse_arguments
+from customize_authorization.config import CUSTOM_GROUPS_DEFINITION_FILE
+from customize_authorization.rest_api_helper import create_group, get_all_ldap_group_users, \
+                                                    check_ldap_group_existence, modify_group_membership
 
 
 def main():

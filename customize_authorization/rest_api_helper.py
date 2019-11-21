@@ -1,10 +1,7 @@
 import json
-
 import requests
-
-import config
-from oath_helper import get_oauth_token
-import logger
+from customize_authorization import config, logger
+from customize_authorization.oath_helper import get_oauth_token
 
 
 def create_group(group_id, group_name):

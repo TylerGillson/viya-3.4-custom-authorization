@@ -1,8 +1,7 @@
 import json
 import os
 from subprocess import run
-
-import config
+from customize_authorization import config
 
 
 def get_oauth_token():
