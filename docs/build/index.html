@@ -30,28 +30,120 @@
 <h1>Welcome to Viya 3.4 Custom Authorization’s documentation!<a class="headerlink" href="#welcome-to-viya-3-4-custom-authorization-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-customize_authorization"></span><dl class="function">
-<dt id="customize_authorization.main">
-<code class="sig-prename descclassname">customize_authorization.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.main" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Usage:</dt><dd><p>python generate_custom_authorization_groups.py [–options]</p>
-</dd>
-<dt>Examples:</dt><dd><ol class="arabic simple">
-<li><dl class="simple">
-<dt>Build/re-build auto-maintained groups from a group definition file:</dt><dd><p>python generate_custom_authorization_groups.py -agf auto-groups.csv</p>
-</dd>
-</dl>
+<span class="target" id="module-customize_authorization.customize_authorization"></span><dl class="function">
+<dt id="customize_authorization.customize_authorization.main">
+<code class="sig-prename descclassname">customize_authorization.customize_authorization.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.customize_authorization.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage:</p>
+<blockquote>
+<div><p>python generate_custom_authorization_groups.py [–options]</p>
+</div></blockquote>
+<p>Examples:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Create and/or maintain auto-maintained groups from a group definition file specified at run-time:</p>
+<blockquote>
+<div><p>python generate_custom_authorization_groups.py -agf auto-groups.csv</p>
+</div></blockquote>
+</li>
+<li><p>Same as above, but exercising all command-line options:</p>
+<blockquote>
+<div><p>python generate_custom_authorization_groups.py                 –sas-endpoint <a class="reference external" href="http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com">http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com</a>                 –credentials-path C:Userscantyg.sascredentials.json                 –auto-group-file C:UserscantygDownloadsSA_AUTHORIZATIONauto-maintained-groups.csv</p>
+</div></blockquote>
 </li>
 </ol>
+</div></blockquote>
+</dd></dl>
+
+<span class="target" id="module-customize_authorization.argument_helper"></span><dl class="function">
+<dt id="customize_authorization.argument_helper.parse_arguments">
+<code class="sig-prename descclassname">customize_authorization.argument_helper.</code><code class="sig-name descname">parse_arguments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.argument_helper.parse_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method leverages the argparse module to optionally modify the script’s configuration variables at run-time.</p>
+</dd></dl>
+
+<span class="target" id="module-customize_authorization.oath_helper"></span><dl class="function">
+<dt id="customize_authorization.oath_helper.get_oauth_token">
+<code class="sig-prename descclassname">customize_authorization.oath_helper.</code><code class="sig-name descname">get_oauth_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.oath_helper.get_oauth_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a bearer token for a user profile on a SAS Viya services node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>oath_token: a bearer token</p>
 </dd>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-auth_and_rest_helpers"></span><dl class="function">
-<dt id="auth_and_rest_helpers.get_oauth_token">
-<code class="sig-prename descclassname">auth_and_rest_helpers.</code><code class="sig-name descname">get_oauth_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#auth_and_rest_helpers.get_oauth_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a bearer token for a particular SAS Viya services node.
-:return: oath_token: a bearer token</p>
+<span class="target" id="module-customize_authorization.logger"></span><span class="target" id="module-customize_authorization.rest_api_helper"></span><dl class="function">
+<dt id="customize_authorization.rest_api_helper.call_rest_api">
+<code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">call_rest_api</code><span class="sig-paren">(</span><em class="sig-param">request_value</em>, <em class="sig-param">request_type</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.call_rest_api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute an HTTP request against a SAS REST API. In this case, the API in question will always be the Identities API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request_value</strong> – an API endpoint</p></li>
+<li><p><strong>request_type</strong> – an HTTP request type, i.e. ‘get’, ‘put’, ‘head’, etc.</p></li>
+<li><p><strong>kwargs</strong> – a dictionary of key-value pairs, including data, which contains the request body</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the HTTP response from the API endpoint</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="customize_authorization.rest_api_helper.check_ldap_group_existence">
+<code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">check_ldap_group_existence</code><span class="sig-paren">(</span><em class="sig-param">group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.check_ldap_group_existence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the SAS Identities API to determine if an LDAP group exists or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>group_id</strong> – the ID of the LDAP group of interest</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a boolean flag</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="customize_authorization.rest_api_helper.create_group">
+<code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">create_group</code><span class="sig-paren">(</span><em class="sig-param">group_id</em>, <em class="sig-param">group_name</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.create_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the SAS Identities API to create a custom group object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group_id</strong> – the id of the LDAP group being created</p></li>
+<li><p><strong>group_name</strong> – the name of the LDAP group being created</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="customize_authorization.rest_api_helper.get_all_ldap_group_users">
+<code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">get_all_ldap_group_users</code><span class="sig-paren">(</span><em class="sig-param">group_id</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.get_all_ldap_group_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the SAS Identities API to retrieve all users contained within an LDAP group object’s member tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>group_id</strong> – the id of the LDAP group to retrieve users from</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a JSON array of user objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="customize_authorization.rest_api_helper.modify_group_membership">
+<code class="sig-prename descclassname">customize_authorization.rest_api_helper.</code><code class="sig-name descname">modify_group_membership</code><span class="sig-paren">(</span><em class="sig-param">http_method</em>, <em class="sig-param">group_id</em>, <em class="sig-param">user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#customize_authorization.rest_api_helper.modify_group_membership" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the membership of an existing group (LDAP or custom).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>http_method</strong> – either ‘put’ or ‘delete’ for addition or deletion, respectively</p></li>
+<li><p><strong>group_id</strong> – the id of the group being modified</p></li>
+<li><p><strong>user_id</strong> – the id of the user being added or removed</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

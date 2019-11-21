@@ -3,13 +3,27 @@ import requests
 from customize_authorization import config, logger
 from customize_authorization.oath_helper import get_oauth_token
 
+"""
+rest_api_helper.py
+==================
+
+A collection of helper methods for querying the SAS Identities API in order to: create custom groups,
+verify the existence of custom groups, retrieve the members of existing LDAP groups, and manage the
+membership of custom groups.
+"""
+
 
 def create_group(group_id, group_name):
     """
     Use the SAS Identities API to create a custom group object.
 
-    :param group_id: the id of the LDAP group being created
-    :param group_name: the name of the LDAP group being created
+    Parameters
+    ----------
+    group_id:
+        The ID of the LDAP group being created.
+
+    group_name:
+        The name of the LDAP group being created.
     """
 
     kwargs = config.DEFAULT_REST_KWARGS
@@ -24,8 +38,17 @@ def get_all_ldap_group_users(group_id):
     """
     Query the SAS Identities API to retrieve all users contained within an LDAP group object's member tree.
 
-    :param group_id: the id of the LDAP group to retrieve users from
-    :return: a JSON array of user objects
+    Parameters
+    ----------
+
+    group_id:
+        The ID of the LDAP group to retrieve users from.
+
+    Return
+    ------
+
+    users:
+        A JSON array of user objects.
     """
 
     endpoint = f"/identities/groups/{group_id}/userMembers?depth=-1"  # recurse to bottom of LDAP group's member tree
@@ -40,8 +63,16 @@ def check_ldap_group_existence(group_id):
     """
     Query the SAS Identities API to determine if an LDAP group exists or not.
 
-    :param group_id: the ID of the LDAP group of interest
-    :return: a boolean flag
+    Parameters
+    ----------
+
+    group_id:
+        The ID of the LDAP group of interest.
+
+    Return
+    ------
+
+    A boolean flag.
     """
     endpoint = f"/identities/groups/{group_id}"
     http_response = call_rest_api(endpoint, "head", **config.DEFAULT_REST_KWARGS)
@@ -54,9 +85,17 @@ def modify_group_membership(http_method, group_id, user_id):
     """
     Modify the membership of an existing group (LDAP or custom).
 
-    :param http_method: either 'put' or 'delete' for addition or deletion, respectively
-    :param group_id: the id of the group being modified
-    :param user_id: the id of the user being added or removed
+    Parameters
+    ----------
+
+    http_method:
+        Either 'put' or 'delete' for addition or deletion, respectively.
+
+    group_id:
+        The ID of the group being modified.
+
+    user_id:
+        The ID of the user being added or removed.
     """
 
     if http_method not in ["put", "delete"]:
@@ -81,10 +120,22 @@ def call_rest_api(request_value, request_type, **kwargs):
     """
     Execute an HTTP request against a SAS REST API. In this case, the API in question will always be the Identities API.
 
-    :param request_value: an API endpoint
-    :param request_type: an HTTP request type, i.e. 'get', 'put', 'head', etc.
-    :param kwargs: a dictionary of key-value pairs, including data, which contains the request body
-    :return: the HTTP response from the API endpoint
+    Parameters
+    ----------
+
+    request_value:
+        An API endpoint.
+
+    request_type:
+        An HTTP request type, i.e. 'get', 'put', 'head', etc.
+
+    kwargs:
+        A dictionary of key-value pairs, including data, which contains the request body.
+
+    Return
+    ------
+
+    The HTTP response from the API endpoint.
     """
 
     # Validate the HTTP request type:

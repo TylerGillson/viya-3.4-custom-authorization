@@ -3,12 +3,26 @@ import os
 from subprocess import run
 from customize_authorization import config
 
+"""
+oath_helper.py
+==============
+
+A helper method for authenticating with a remote SAS Viya services node.
+It uses the SAS Administration CLI to generate a bearer token, then extracts it from where it was stored on
+the local filesystem and returns it as a string.
+"""
+
 
 def get_oauth_token():
     """
-    Generate a bearer token for a user profile on a SAS Viya services node.
+    Use the sas-admin CLI to generate a bearer token for a user profile on a SAS Viya services node,
+    then parse it out of the credentials.json file.
 
-    :return: oath_token: a bearer token
+    Return
+    ------
+
+    oath_token:
+        A bearer token to be used in an HTTP request's authorization header.
     """
 
     # Authenticate via the sas-admin CLI:

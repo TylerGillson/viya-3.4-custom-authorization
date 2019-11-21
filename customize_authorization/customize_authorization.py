@@ -3,25 +3,35 @@ from customize_authorization.config import CUSTOM_GROUPS_DEFINITION_FILE
 from customize_authorization.rest_api_helper import create_group, get_all_ldap_group_users, \
                                                     check_ldap_group_existence, modify_group_membership
 
+"""
+customize_authorization.py
+==========================
+A script used to maintain custom authorization groups in Viya 3.4.
+
+Usage:
+
+    python generate_custom_authorization_groups.py [--options]
+
+Examples:
+
+    1. Create and/or maintain auto-maintained groups from a group definition file specified at run-time:
+
+        python generate_custom_authorization_groups.py -agf auto-groups.csv
+
+    2. Same as above, but exercising all command-line options:
+
+        python generate_custom_authorization_groups.py \
+            --sas-endpoint http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com \
+            --credentials-path C:\\Users\\cantyg\\.sas\\credentials.json \
+            --auto-group-file C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\auto-maintained-groups.csv
+"""
+
 
 def main():
     """
-    Usage:
-
-        python generate_custom_authorization_groups.py [--options]
-
-    Examples:
-
-        1. Create and/or maintain auto-maintained groups from a group definition file specified at run-time:
-
-            python generate_custom_authorization_groups.py -agf auto-groups.csv
-
-        2. Same as above, but exercising all command-line options:
-
-            python generate_custom_authorization_groups.py \
-                --sas-endpoint http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com \
-                --credentials-path C:\\Users\\cantyg\\.sas\\credentials.json \
-                --auto-group-file C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\auto-maintained-groups.csv
+    Update configuration settings based on command-line parameters, then proceed to parse the custom
+    authorization groups file and make any necessary changes - such as creating new custom groups and managing
+    the membership of existing custom groups.
     """
 
     # Parse command-line arguments to update configuration at run-time:

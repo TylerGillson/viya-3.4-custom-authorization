@@ -1,6 +1,13 @@
 import argparse
 from customize_authorization import config
 
+"""
+argument_helper.py
+==================
+
+A helper method to modify configuration values at run-time via command-line options.
+"""
+
 
 def parse_arguments():
     """
