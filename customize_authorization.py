@@ -1,18 +1,23 @@
+from argument_helper import parse_arguments
 from config import CUSTOM_GROUPS_DEFINITION_FILE
-from auth_and_rest_helpers import get_ldap_group, create_group, get_all_ldap_group_users, modify_group_membership, \
-                                  parse_arguments
+from rest_api_helper import create_group, get_all_ldap_group_users, get_ldap_group, modify_group_membership
 
 
 def main():
     """
-    # Usage:
-     - python generate_custom_authorization_groups.py [--options]
+    Usage:
 
-    # Examples:
+        python generate_custom_authorization_groups.py [--options]
+
+    Examples:
+
         1. Create and/or maintain auto-maintained groups from a group definition file specified at run-time:
-            - python generate_custom_authorization_groups.py -agf auto-groups.csv
+
+            python generate_custom_authorization_groups.py -agf auto-groups.csv
+
         2. Same as above, but exercising all command-line options:
-            - python generate_custom_authorization_groups.py \
+
+            python generate_custom_authorization_groups.py \
                 --sas-endpoint http://cantyg-full-viya.canpsd-fcc.sashq-d.openstack.sas.com \
                 --credentials-path C:\\Users\\cantyg\\.sas\\credentials.json \
                 --auto-group-file C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\auto-maintained-groups.csv
