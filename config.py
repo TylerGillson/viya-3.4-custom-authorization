@@ -12,3 +12,6 @@ CREDENTIALS_PATH = "C:\\Users\\cantyg\\.sas\\credentials.json"
 
 # LDAP GROUP CUSTOMIZATION CONSTANTS:
 CUSTOM_GROUPS_DEFINITION_FILE = "C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\auto-maintained-groups.csv"
+
+# LOGGING CONSTANTS:
+LOG_PATH = "C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\log.txt"

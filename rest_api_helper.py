@@ -4,6 +4,7 @@ import requests
 
 import config
 from oath_helper import get_oauth_token
+import logger
 
 
 def create_group(group_id, group_name):
@@ -19,6 +20,7 @@ def create_group(group_id, group_name):
     http_response = call_rest_api("/identities/groups/", "post", **kwargs)
     if http_response.status_code != 201:  # 201 = 'new group created'
         raise ValueError(http_response.text)
+    logger.log(f"New custom group, {group_name}, with ID: {group_id}, was created successfully.")
 
 
 def get_all_ldap_group_users(group_id):
@@ -44,32 +46,42 @@ def get_ldap_group(group_name):
     :param group_name: the name of the LDAP group to retrieve
     :return: a 2-tuple containing the group object (or None, if no such group exists) and a 'group exists' flag
     """
-
     endpoint = f"/identities/groups/?filter=startsWith(name,'{group_name}')"
     http_response = call_rest_api(endpoint, "get", **config.DEFAULT_REST_KWARGS)
     if http_response.status_code != 200:  # 200 = 'OK'
+        raise ValueError(http_response.text)
+    try:
+        group = http_response.json()["items"][0]
+        return group, True
+    except IndexError:
         return None, False
-    group = http_response.json()["items"][0]
-    return group, True
 
 
-def modify_group_membership(http_method, group_id, member_id):
+def modify_group_membership(http_method, group_id, user_id):
     """
     Modify the membership of an existing group (LDAP or custom).
 
     :param http_method: either 'put' or 'delete' for addition or deletion, respectively
     :param group_id: the id of the group being modified
-    :param member_id: the id of the user being added or removed
+    :param user_id: the id of the user being added or removed
     """
 
     if http_method not in ["put", "delete"]:
         raise ValueError(f"Invalid HTTP request type: {http_method}")
-    endpoint = f"/identities/groups/{group_id}/userMembers/{member_id}"
+    endpoint = f"/identities/groups/{group_id}/userMembers/{user_id}"
     http_response = call_rest_api(endpoint, http_method, **config.DEFAULT_REST_KWARGS)
-    if http_method == "put" and http_response.status_code != 201:       # 201 = 'member added to group'
-        raise ValueError(http_response.text)
-    elif http_method == "delete" and http_response.status_code != 204:  # 204 = 'member removed'
-        raise ValueError(http_response.text)
+
+    # Adding a user:
+    if http_method == "put":
+        if http_response.status_code != 201:  # 201 = 'member added to group'
+            raise ValueError(http_response.text)
+        logger.log(f"A user with ID: {user_id}, was added to the custom group with ID: {group_id}.")
+
+    # Removing a user:
+    elif http_method == "delete":
+        if http_response.status_code != 204:  # 204 = 'member removed'
+            raise ValueError(http_response.text)
+        logger.log(f"A user with ID: {user_id}, was removed from the custom group with ID: {group_id}.")
 
 
 def call_rest_api(request_value, request_type, **kwargs):
