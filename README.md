@@ -47,3 +47,7 @@ For each row in the custom group definition file, the script will query the SAS 
       --log-root C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION \
       --auto-group-file C:\\Users\\cantyg\\Downloads\\SA_AUTHORIZATION\\auto-maintained-groups.csv
   ```
+  
+  # Requirements
+  * <a href="https://support.sas.com/downloads/package.htm?pid=2133">SAS Administration CLI</a> (sas-admin). It must be installed locally, and the executable must be on your PATH.
+  * All Python requirements are documented in requirements.txt.
